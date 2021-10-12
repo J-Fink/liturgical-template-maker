@@ -17,6 +17,7 @@
     "deploy": "gatsby build --prefix-paths && gh-pages -d public"
   },
   "dependencies": {
+    "@romcal/calendar.united-states": "^3.0.0-alpha.0",
     "babel-plugin-styled-components": "^1.13.2",
     "gatsby": "^3.13.1",
     "gatsby-plugin-styled-components": "^4.14.0",
