@@ -8,9 +8,16 @@ import romcal, { Types } from 'romcal';
     const [templateMade, setTemplateMade] = useState(false);
     const [templateHTML, setTemplateHTML] = useState('');
     let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    let month, day, year, currentSeason, baseURL, selectedDayOfYear, currentDayOfYear, dayOfWeek, displayMonth;
+    let month, day, paddedDay, year, currentSeason, baseURL, selectedDayOfYear, currentDayOfYear, dayOfWeek, displayMonth;
     let facebookText, websiteCode, meridiemIndicator;
+    let announcementBlock,
+    bulletinAnnouncementWebsite, enterDateObjectMonth, enterDateObjectDay, facebookEmbed, youtubeEmbed, paddedMonth, paddedDisplayMonth;
+    //TODO variables to be changed later with logic
+    let embedCodeFacebook = 'fill in later';
+    let streamStartHour = '07';
+    let streamStartMinute = '30';
     
+
     const dayOfYear = (date) => {
       //date is new Date(yyyy, m, d)
       let startOfYearDate = new Date(date.getFullYear(), 0, 0);
@@ -100,7 +107,7 @@ import romcal, { Types } from 'romcal';
           <div id="${dayOfWeek}${meridiemIndicator.value}-container">
               <div style="text-align: center;">        
               <h1>Join Us For:</h1>
-              <p>${displayDate} ${enterDay.value} ${periodIndicator} Mass for the ${liturgicalWeek.value} Week in ${liturgicalSeason.value}</p>
+              <p>${displayMonth}/${day}/${year} ${days[new Date(year, month, day).getDay()]} Mass, Cathedral of Saint Paul, St. Paul, MN</p>
               
               <div id="${dayOfWeek}${meridiemIndicator.value}-announcement">
                   <p style="margin: 0px;">
@@ -111,7 +118,7 @@ import romcal, { Types } from 'romcal';
                       </em>
                   </p>
               </div>    
-              <div id="${dayOfWeek}${meridiemIndicator.value}" style="text-align: center; background-image:url('/sites/default/files/files/${enterDateObjectMonth}_${enterDateObjectDay}%20${enterDay.value}%20${meridiemIndicator.value}%20Mass.jpg'); background-size: 400px 225px; width: 400px; height: 225px; margin: auto;">
+              <div id="${dayOfWeek}${meridiemIndicator.value}" style="text-align: center; background-image:url('/sites/default/files/files/${month}_${day}%20${days}%20${meridiemIndicator.value}%20Mass.jpg'); background-size: 400px 225px; width: 400px; height: 225px; margin: auto;">
                   <iframe id="${dayOfWeek}${meridiemIndicator.value}Iframe" style="visibility: hidden;" allowfullscreen="true" allowtransparency="true" frameborder="0" height="225" width="400" scrolling="no" src="${embedCodeFacebook.value}" style="border:none;overflow:hidden;" ></iframe><!-- when embedding facebook live stream make sure to add at the end of the src "&show_text=0&width=560"-->
               </div>
               ${bulletinAnnouncementWebsite}
@@ -161,8 +168,8 @@ import romcal, { Types } from 'romcal';
               ${dayOfWeek}${meridiemIndicator.value}Min = (${dayOfWeek}${meridiemIndicator.value}Min < 10 ? "0" : "") + ${dayOfWeek}${meridiemIndicator.value}Min;
               ${dayOfWeek}${meridiemIndicator.value}Sec = (${dayOfWeek}${meridiemIndicator.value}Sec < 10 ? "0" : "") + ${dayOfWeek}${meridiemIndicator.value}Sec;
               var ${dayOfWeek}${meridiemIndicator.value}Str = ${dayOfWeek}${meridiemIndicator.value}Mth + "-" + ${dayOfWeek}${meridiemIndicator.value}Dy + " " +  ${dayOfWeek}${meridiemIndicator.value}Hr + ":" + ${dayOfWeek}${meridiemIndicator.value}Min;
-              ${dayOfWeek}${meridiemIndicator.value}Month = "${enterDateMonth}";
-              ${dayOfWeek}${meridiemIndicator.value}Day = "${enterDateDate}";
+              ${dayOfWeek}${meridiemIndicator.value}Month = "${paddedDisplayMonth}";
+              ${dayOfWeek}${meridiemIndicator.value}Day = "${paddedDay}";
               ${dayOfWeek}${meridiemIndicator.value}Hour = "${streamStartHour}";
               ${dayOfWeek}${meridiemIndicator.value}Minutes = "${streamStartMinute}";
               var ${dayOfWeek}${meridiemIndicator.value}InputStr = ${dayOfWeek}${meridiemIndicator.value}Month + "-" + ${dayOfWeek}${meridiemIndicator.value}Day + " " + ${dayOfWeek}${meridiemIndicator.value}Hour + ":" + ${dayOfWeek}${meridiemIndicator.value}Minutes;
@@ -199,7 +206,13 @@ import romcal, { Types } from 'romcal';
   const handleChange = () => {
     //get mm/dd/yyyy from date input and set dateRef to that 
     day = parseInt(dateRef.current.value.split("-")[2]); //1-31
-    month = parseInt(dateRef.current.value.split("-")[1] - 1); //0-11
+    paddedDay = dateRef.current.value.split("-")[2]; //01-31
+    console.log(paddedDay);
+    month = parseInt(dateRef.current.value.split("-")[1] - 1); 
+    console.log(month);//0-11
+    
+    paddedDisplayMonth = dateRef.current.value.split("-")[1];
+    console.log(paddedDisplayMonth);
     year = parseInt(dateRef.current.value.split("-")[0]);//yyyy
     displayMonth = month + 1;
     console.log(dateRef.current.valueAsDate);
@@ -211,7 +224,7 @@ import romcal, { Types } from 'romcal';
     //get mm/dd/yyyy from date input and set dateRef to that 
     meridiemIndicator = meridiemRef.current;
     console.log(meridiemIndicator.value)
-    console.log(meridiemRef.current.value);
+    // console.log(meridiemRef.current.value);
     // day = parseInt(dateRef.current.value.split("-")[2]); //1-31
     // month = parseInt(dateRef.current.value.split("-")[1] - 1); //0-11
     // year = parseInt(dateRef.current.value.split("-")[0]);//yyyy
@@ -236,9 +249,9 @@ import romcal, { Types } from 'romcal';
       <input type="date" placeholder="Date: mm/dd/yyyy" ref={dateRef} onChange={handleChange}></input>
       
       
-      <select name="Meridiem Indicator" ref={meridiemRef} placeholder="AM/PM" onChange={meridiemChange}>
+      <select name="Meridiem Indicator" ref={meridiemRef} onChange={meridiemChange}>
         {/* <option selected="selected">AM/PM</option> */}
-        <option default>AM/PM</option>
+        <option disabled selected>AM/PM</option>
         <option value="AM">AM</option>
         <option value="PM">PM</option>
       </select>
